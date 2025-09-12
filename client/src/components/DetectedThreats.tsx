@@ -12,6 +12,7 @@ import type { Threat } from "@shared/schema";
 
 export default function DetectedThreats() {
   const [selectedThreat, setSelectedThreat] = useState<Threat | null>(null);
+  const [showAll, setShowAll] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
   
@@ -19,6 +20,9 @@ export default function DetectedThreats() {
     queryKey: ['/api/threats'],
     refetchInterval: 5000,
   });
+
+  // Show only first 10 threats unless "Show More" is clicked
+  const displayedThreats = showAll ? threats : threats?.slice(0, 10);
 
   const blockIPMutation = useMutation({
     mutationFn: async (threatId: string) => {
@@ -103,20 +107,21 @@ export default function DetectedThreats() {
             </div>
           </div>
         ) : threats && threats.length > 0 ? (
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="border-b border-border">
-                  <TableHead className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">Threat</TableHead>
-                  <TableHead className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">Severity</TableHead>
-                  <TableHead className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">Source IP</TableHead>
-                  <TableHead className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">Timestamp</TableHead>
-                  <TableHead className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">Status</TableHead>
-                  <TableHead className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody className="divide-y divide-border">
-                {threats.map((threat) => {
+          <>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-b border-border">
+                    <TableHead className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">Threat</TableHead>
+                    <TableHead className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">Severity</TableHead>
+                    <TableHead className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">Source IP</TableHead>
+                    <TableHead className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">Timestamp</TableHead>
+                    <TableHead className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">Status</TableHead>
+                    <TableHead className="px-6 py-4 text-left text-sm font-medium text-muted-foreground">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody className="divide-y divide-border">
+                  {displayedThreats?.map((threat) => {
                   const ThreatIcon = getThreatIcon(threat.name);
                   
                   return (
@@ -259,7 +264,37 @@ export default function DetectedThreats() {
                 })}
               </TableBody>
             </Table>
-          </div>
+            </div>
+            {/* Show More/Show Less Button */}
+            {threats && threats.length > 10 && (
+              <div className="p-4 border-t border-border bg-muted/20">
+                <div className="flex items-center justify-center">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowAll(!showAll)}
+                    className="flex items-center gap-2"
+                  >
+                    {showAll ? (
+                      <>
+                        <X className="w-4 h-4" />
+                        Show Less ({threats.length - 10} threats hidden)
+                      </>
+                    ) : (
+                      <>
+                        <Eye className="w-4 h-4" />
+                        Show More ({threats.length - 10} more threats)
+                      </>
+                    )}
+                  </Button>
+                </div>
+                <div className="text-center mt-2">
+                  <p className="text-xs text-muted-foreground">
+                    Showing {showAll ? threats.length : Math.min(10, threats.length)} of {threats.length} total threats
+                  </p>
+                </div>
+              </div>
+            )}
+          </>
         ) : (
           <div className="p-6 text-center">
             <p className="text-muted-foreground">No threats detected</p>

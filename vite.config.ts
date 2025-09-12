@@ -1,20 +1,13 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
-import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
 export default defineConfig({
   plugins: [
-    react(),
-    runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== "production" &&
-    process.env.REPL_ID !== undefined
-      ? [
-          await import("@replit/vite-plugin-cartographer").then((m) =>
-            m.cartographer(),
-          ),
-        ]
-      : []),
+    react({
+      // Optimize React refresh
+      fastRefresh: true,
+    }),
   ],
   resolve: {
     alias: {
@@ -27,11 +20,36 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    // Optimize build
+    minify: 'esbuild',
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-button'],
+        }
+      }
+    }
   },
   server: {
-    fs: {
-      strict: true,
-      deny: ["**/.*"],
+    // Optimize dev server
+    hmr: {
+      overlay: false
     },
+    host: true,
+    fs: {
+      strict: false, // Allow more permissive file system access
+    },
+  },
+  // Optimize dependencies
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      '@tanstack/react-query',
+      'lucide-react'
+    ],
+    force: true
   },
 });

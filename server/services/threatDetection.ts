@@ -116,7 +116,7 @@ class ThreatDetectionService {
     }
 
     // Schedule next threat simulation
-    setTimeout(() => this.simulateThreats(), Math.random() * 30000 + 15000); // 15-45 seconds
+    setTimeout(() => this.simulateThreats(), Math.random() * 60000 + 30000); // 30-90 seconds (reduced frequency)
   }
 
   private async simulateSQLInjection() {

@@ -11,7 +11,7 @@ import type { Response } from "@shared/schema";
 export default function AutomatedResponses() {
   const { data: responses, isLoading } = useQuery<Response[]>({
     queryKey: ['/api/responses'],
-    refetchInterval: 5000,
+    refetchInterval: 15000, // Reduced from 5000 to 15000ms
   });
 
   const getResponseIcon = (action: string) => {

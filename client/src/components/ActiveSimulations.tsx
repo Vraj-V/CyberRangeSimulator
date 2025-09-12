@@ -8,7 +8,7 @@ import type { Simulation } from "@shared/schema";
 export default function ActiveSimulations() {
   const { data: simulations, isLoading } = useQuery<Simulation[]>({
     queryKey: ['/api/simulations/active'],
-    refetchInterval: 3000,
+    refetchInterval: 10000, // Reduced from 3000 to 10000ms
   });
 
   const getSimulationIcon = (type: string) => {
