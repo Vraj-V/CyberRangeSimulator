@@ -24,9 +24,7 @@
     }
   ],
   "installCommand": "npm install --legacy-peer-deps",
-  "functions": {
-    "server/index.ts": {
-      "maxDuration": 30
-    }
+  "env": {
+    "NODE_ENV": "production"
   }
 }
