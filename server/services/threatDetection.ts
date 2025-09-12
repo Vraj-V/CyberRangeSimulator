@@ -61,15 +61,34 @@ class ThreatDetectionService {
     this.isRunning = true;
     console.log('Threat detection service started');
     
-    // Simulate threat detection
-    this.simulateThreats();
-    
-    // Log service start
-    storage.createSystemLog({
-      level: 'info',
-      message: 'Threat detection service started',
-      component: 'threat_detection'
+    // Test database connection before starting simulations
+    this.testDatabaseConnection().then((connected) => {
+      if (connected) {
+        // Simulate threat detection
+        this.simulateThreats();
+        
+        // Log service start
+        storage.createSystemLog({
+          level: 'info',
+          message: 'Threat detection service started',
+          component: 'threat_detection'
+        }).catch(err => console.log('Failed to log service start:', err.message));
+      } else {
+        console.log('Database not ready, threat detection will retry in 30 seconds');
+        setTimeout(() => this.start(), 30000);
+        this.isRunning = false;
+      }
     });
+  }
+
+  private async testDatabaseConnection(): Promise<boolean> {
+    try {
+      await storage.getActiveThreatsCount();
+      return true;
+    } catch (error) {
+      console.log('Database connection test failed:', error instanceof Error ? error.message : 'Unknown error');
+      return false;
+    }
   }
 
   stop() {
@@ -80,17 +99,21 @@ class ThreatDetectionService {
   private async simulateThreats() {
     if (!this.isRunning) return;
 
-    // Simulate various threat scenarios
-    const scenarios = [
-      this.simulateSQLInjection,
-      this.simulateBruteForce,
-      this.simulateMalwareDetection,
-      this.simulateDDoSAttack,
-      this.simulateSuspiciousUpload
-    ];
+    try {
+      // Simulate various threat scenarios
+      const scenarios = [
+        this.simulateSQLInjection,
+        this.simulateBruteForce,
+        this.simulateMalwareDetection,
+        this.simulateDDoSAttack,
+        this.simulateSuspiciousUpload
+      ];
 
-    const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
-    await scenario.call(this);
+      const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+      await scenario.call(this);
+    } catch (error) {
+      console.log('Error in threat simulation:', error instanceof Error ? error.message : 'Unknown error');
+    }
 
     // Schedule next threat simulation
     setTimeout(() => this.simulateThreats(), Math.random() * 30000 + 15000); // 15-45 seconds
@@ -213,7 +236,15 @@ class ThreatDetectionService {
 
       console.log(`Threat detected: ${threat.name} from ${threat.sourceIP}`);
     } catch (error) {
-      console.error('Error detecting threat:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.log(`Failed to process threat: ${errorMessage}`);
+      
+      // If database connection is lost, stop the service temporarily
+      if (errorMessage.includes('CONNECT_TIMEOUT') || errorMessage.includes('connection')) {
+        console.log('Database connection lost, pausing threat detection for 60 seconds');
+        this.isRunning = false;
+        setTimeout(() => this.start(), 60000);
+      }
     }
   }
 

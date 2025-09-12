@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Settings, FileText, Undo, Shield, Ban, Activity } from "lucide-react";
+import ResponseLogsDialog from "./ResponseLogsDialog";
 import type { Response } from "@shared/schema";
 
 export default function AutomatedResponses() {
@@ -123,14 +124,19 @@ export default function AutomatedResponses() {
                       </TableCell>
                       <TableCell className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            data-testid={`button-view-logs-${response.id}`}
-                            title="View Logs"
-                          >
-                            <FileText className="w-4 h-4" />
-                          </Button>
+                          <ResponseLogsDialog
+                            response={response}
+                            trigger={
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                data-testid={`button-view-logs-${response.id}`}
+                                title="View Logs"
+                              >
+                                <FileText className="w-4 h-4" />
+                              </Button>
+                            }
+                          />
                           <Button
                             variant="ghost"
                             size="sm"

@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Mail, Database, Zap } from "lucide-react";
+import CreateSimulationDialog from "./CreateSimulationDialog";
 import type { Simulation } from "@shared/schema";
 
 export default function ActiveSimulations() {
@@ -42,10 +43,7 @@ export default function ActiveSimulations() {
       <CardHeader className="p-6 border-b border-border">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-card-foreground">Active Simulations</h3>
-          <Button className="bg-primary text-primary-foreground hover:bg-primary/90" data-testid="button-new-simulation">
-            <Plus className="w-4 h-4 mr-2" />
-            New Simulation
-          </Button>
+          <CreateSimulationDialog />
         </div>
       </CardHeader>
       <CardContent className="p-6">
@@ -107,9 +105,9 @@ export default function ActiveSimulations() {
         ) : (
           <div className="text-center py-8">
             <p className="text-muted-foreground">No active simulations</p>
-            <Button className="mt-4" data-testid="button-start-simulation">
-              Start Your First Simulation
-            </Button>
+            <div className="mt-4">
+              <CreateSimulationDialog isStartFirst={true} />
+            </div>
           </div>
         )}
       </CardContent>
