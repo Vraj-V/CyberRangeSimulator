@@ -1,12 +1,23 @@
+import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import 'dotenv/config';
+import { db } from './db'
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+app.get('/test', async (_req, res) => {
+  try {
+    // Test database connection using a simple query
+    const result = await db.execute('SELECT 1 as test');
+    res.json({ status: 'Database connection successful', result });
+  } catch (error) {
+    console.error('Database connection error:', error);
+    res.status(500).json({ error: 'Database connection failed', details: error instanceof Error ? error.message : 'Unknown error' });
+  }
+});
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -43,9 +54,16 @@ app.use((req, res, next) => {
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
+    
+    console.error('Error occurred:', {
+      status,
+      message,
+      stack: err.stack,
+      url: _req.url,
+      method: _req.method
+    });
 
     res.status(status).json({ message });
-    throw err;
   });
 
   // importantly only setup vite in development and after
@@ -61,12 +79,17 @@ app.use((req, res, next) => {
   // Other ports are firewalled. Default to 5000 if not specified.
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen({
+const port = parseInt(process.env.PORT || '5000', 10);
+
+server.listen(
+  {
     port,
-    host: "localhost",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-  });
+    host: "127.0.0.1", // Force IPv4
+    // reusePort: true  ❌ remove this line
+  },
+  () => {
+    console.log(`Serving on port ${port}`);
+  }
+);
+
 })();
