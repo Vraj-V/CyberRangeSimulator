@@ -3,9 +3,9 @@ import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { threatDetectionService } from "./services/threatDetection";
-import { simulationEngine } from "./services/simulationEngine.js";
+// import { simulationEngine } from "./services/simulationEngine";
 import { responseAutomation } from "./services/responseAutomation.js";
-import { insertThreatSchema, insertSimulationSchema, insertResponseSchema } from "@shared/schema";
+import { insertThreatSchema, insertSimulationSchema, insertResponseSchema, type Simulation } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
@@ -38,8 +38,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Initialize services with broadcast capability
   threatDetectionService.setBroadcast(broadcast);
-  simulationEngine.setBroadcast(broadcast);
+  // simulationEngine.setBroadcast(broadcast);
   responseAutomation.setBroadcast(broadcast);
+
+  // Simple test endpoint
+  app.get('/api/test', (req, res) => {
+    res.json({ message: 'API is working', timestamp: new Date().toISOString() });
+  });
 
   // Dashboard metrics endpoint
   app.get('/api/dashboard/metrics', async (req, res) => {
@@ -152,20 +157,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log('Creating simulation with data:', req.body);
       
+      // Validate the input data
       const simulationData = insertSimulationSchema.parse(req.body);
       console.log('Parsed simulation data:', simulationData);
       
+      // Create simulation in database
       const simulation = await storage.createSimulation(simulationData);
       console.log('Created simulation:', simulation);
       
-      // Start the simulation
-      await simulationEngine.startSimulation(simulation);
-      console.log('Started simulation engine');
+      // For Vercel serverless, use simplified simulation start
+      // Skip complex engine for now to ensure basic functionality works
+      console.log('Simulation created successfully, skipping complex engine');
       
+      // Broadcast the new simulation
       broadcast({
         type: 'new_simulation',
         data: simulation
       });
+
+      // Create simple system log
+      await storage.createSystemLog({
+        level: 'info',
+        message: `Simulation created: ${simulation.name}`,
+        component: 'api',
+        metadata: { simulationId: simulation.id, type: simulation.type }
+      });
+
+      // Create some demo threats for the simulation
+      setTimeout(async () => {
+        try {
+          await createDemoThreats(simulation);
+        } catch (error) {
+          console.error('Error creating demo threats:', error);
+        }
+      }, 1000);
 
       res.status(201).json(simulation);
     } catch (error) {
@@ -211,4 +236,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
   threatDetectionService.start();
 
   return httpServer;
+}
+
+// Demo threats creation function for serverless compatibility
+async function createDemoThreats(simulation: any) {
+  const demoThreats = [
+    {
+      name: `${simulation.type.toUpperCase()} Attack Detected`,
+      description: `Suspicious ${simulation.type} activity detected from simulation`,
+      severity: 'High',
+      sourceIP: '192.168.1.100',
+      targetIP: '10.0.0.50',
+      status: 'active',
+      metadata: { simulationId: simulation.id, attackType: simulation.type }
+    },
+    {
+      name: 'Malicious Traffic Blocked',
+      description: 'Automated security response triggered',
+      severity: 'Medium',
+      sourceIP: '203.0.113.45',
+      targetIP: '10.0.0.50',
+      status: 'mitigated',
+      metadata: { simulationId: simulation.id, responseAction: 'blocked' }
+    }
+  ];
+
+  for (const threat of demoThreats) {
+    try {
+      await storage.createThreat(threat);
+    } catch (error) {
+      console.error('Error creating demo threat:', error);
+    }
+  }
 }

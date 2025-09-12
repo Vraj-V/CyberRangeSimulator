@@ -79,8 +79,10 @@ export const insertSimulationSchema = createInsertSchema(simulations).omit({
       'Phishing': 'phishing',
       'Malware': 'malware'
     };
-    return typeMap[val] || val.toLowerCase();
-  })
+    return typeMap[val] || val.toLowerCase().replace(/\s+/g, '_');
+  }),
+  targets: z.number().or(z.string().transform(Number)),
+  duration: z.number().optional().or(z.string().transform(Number).optional())
 });
 
 export const insertResponseSchema = createInsertSchema(responses).omit({
