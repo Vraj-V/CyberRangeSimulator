@@ -6,11 +6,7 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  plugins: [
-    react({
-      // React plugin with default settings - fast refresh is enabled by default
-    }),
-  ],
+ 
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "client", "src"),
