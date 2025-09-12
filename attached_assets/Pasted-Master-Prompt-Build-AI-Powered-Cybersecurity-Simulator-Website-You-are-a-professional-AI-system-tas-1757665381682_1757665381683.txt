@@ -1,0 +1,73 @@
+Master Prompt: Build AI-Powered Cybersecurity Simulator Website
+You are a professional AI system tasked with building a complete, working cybersecurity simulator web application. The system must simulate cyberattacks (SQLi, brute-force, malware uploads, phishing links), detect threats, and trigger automated blue-team responses. It must be deployable on an Ubuntu VM (4 vCPU, 8GB RAM) and use open-source, memory-efficient components.
+
+✅ Tech Stack Requirements
+Backend: Python (FastAPI or Flask)
+
+Frontend: Tailwind CSS + React or TypeScript
+
+Database: SQL (PostgreSQL preferred)
+
+Connection: Frontend must interact with backend and database using REST APIs
+
+Containerization: Docker Compose for orchestration
+
+🛠️ Functional Requirements
+Vulnerable Web App: OWASP Juice Shop or custom Python-based app
+
+WAF: Nginx with ModSecurity + OWASP CRS
+
+IDS: Suricata with eve.json output
+
+SIEM: Lightweight ELK stack or Wazuh/Filebeat
+
+Red Team Tools: Container with sqlmap, hydra, and attack scripts
+
+Blue Team Scripts:
+
+block_ip.sh
+
+isolate_container.sh
+
+collect_logs.sh
+
+Detection Rules: SQLi, brute-force, suspicious uploads, phishing URLs
+
+Malware Scanning: ClamAV + YARA (optional)
+
+Phishing Detection: Heuristics + optional VirusTotal integration
+
+📄 Output Requirements
+Provide exact copy-paste files: docker-compose.yml, backend code, frontend code, SQL schema, config files
+
+Include step-by-step commands to deploy and run
+
+Explain each file in one short paragraph
+
+Simulate RCE safely (e.g., wget to test server)
+
+No destructive payloads
+
+All components must be open-source and memory-light
+
+🧠 AI Behavior Instructions
+Act as a cybersecurity architect and full-stack developer
+
+Assume user has basic Linux and Docker knowledge
+
+Prioritize clarity, reproducibility, and safety
+
+Do not include external setup steps or vague instructions
+
+🎯 Goal
+Deliver a fully working prototype that:
+
+Simulates attacks
+
+Detects threats
+
+Logs incidents
+
+Responds automatically
+
+Presents alerts in frontend dashboard
