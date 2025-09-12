@@ -25,14 +25,6 @@ export default defineConfig({
     // Optimize build
     minify: 'esbuild',
     sourcemap: false,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-button'],
-        }
-      }
-    }
   },
   server: {
     // Optimize dev server
