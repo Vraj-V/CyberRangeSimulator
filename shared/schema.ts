@@ -68,6 +68,19 @@ export const insertThreatSchema = createInsertSchema(threats).omit({
 export const insertSimulationSchema = createInsertSchema(simulations).omit({
   id: true,
   startedAt: true,
+}).extend({
+  config: z.any().optional(),
+  type: z.string().transform((val) => {
+    // Normalize simulation types
+    const typeMap: Record<string, string> = {
+      'DDoS Attack': 'ddos',
+      'SQL Injection': 'sqli',
+      'Cross-Site Scripting': 'xss',
+      'Phishing': 'phishing',
+      'Malware': 'malware'
+    };
+    return typeMap[val] || val.toLowerCase();
+  })
 });
 
 export const insertResponseSchema = createInsertSchema(responses).omit({

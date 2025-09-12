@@ -44,30 +44,38 @@ class SimulationEngine {
   }
 
   async startSimulation(simulation: Simulation) {
-    console.log(`Starting simulation: ${simulation.name}`);
+    try {
+      console.log(`Starting simulation: ${simulation.name}`);
 
-    switch (simulation.type) {
-      case 'phishing':
-        this.startPhishingSimulation(simulation);
-        break;
-      case 'sqli':
-        this.startSQLISimulation(simulation);
-        break;
-      case 'ddos':
-        this.startDDoSSimulation(simulation);
-        break;
-      case 'malware':
-        this.startMalwareSimulation(simulation);
-        break;
-      default:
-        console.error(`Unknown simulation type: ${simulation.type}`);
+      switch (simulation.type) {
+        case 'phishing':
+          this.startPhishingSimulation(simulation);
+          break;
+        case 'sqli':
+          this.startSQLISimulation(simulation);
+          break;
+        case 'ddos':
+        case 'DDoS Attack':
+          this.startDDoSSimulation(simulation);
+          break;
+        case 'malware':
+          this.startMalwareSimulation(simulation);
+          break;
+        default:
+          console.error(`Unknown simulation type: ${simulation.type}`);
+      }
+
+      await storage.createSystemLog({
+        level: 'info',
+        message: `Simulation started: ${simulation.name}`,
+        component: 'simulation_engine',
+        metadata: { simulationId: simulation.id, type: simulation.type }
+      });
+    } catch (error) {
+      console.error('Error starting simulation:', error);
+      throw error;
     }
-
-    await storage.createSystemLog({
-      level: 'info',
-      message: `Simulation started: ${simulation.name}`,
-      component: 'simulation_engine',
-      metadata: { simulationId: simulation.id, type: simulation.type }
+  }
     });
   }
 

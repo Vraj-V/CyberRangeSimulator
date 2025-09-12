@@ -150,11 +150,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/simulations', async (req, res) => {
     try {
+      console.log('Creating simulation with data:', req.body);
+      
       const simulationData = insertSimulationSchema.parse(req.body);
+      console.log('Parsed simulation data:', simulationData);
+      
       const simulation = await storage.createSimulation(simulationData);
+      console.log('Created simulation:', simulation);
       
       // Start the simulation
-      simulationEngine.startSimulation(simulation);
+      await simulationEngine.startSimulation(simulation);
+      console.log('Started simulation engine');
       
       broadcast({
         type: 'new_simulation',
@@ -163,7 +169,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.status(201).json(simulation);
     } catch (error) {
-      res.status(400).json({ error: 'Invalid simulation data' });
+      console.error('Error creating simulation:', error);
+      res.status(500).json({ 
+        error: 'Failed to create simulation',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   });
 
