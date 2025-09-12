@@ -265,7 +265,7 @@ async function createDemoThreats(simulation: any) {
     try {
       await storage.createThreat(threat);
     } catch (error) {
-      console.error('Error creating demo threat:', error);
+      console.error('Error creating demo threats:', error);
     }
   }
 }
