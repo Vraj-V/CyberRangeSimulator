@@ -29,11 +29,11 @@ class SimulationEngine {
       templates: ['urgent_security', 'fake_login', 'prize_notification']
     },
     sqli: {
-      endpoints: ['/api/login', '/api/search', '/api/users', '/api/products'],
-      payloads: ["' OR '1'='1", "'; DROP TABLE users; --", "' UNION SELECT * FROM passwords --"]
+      endpoints: ['/login', '/search', '/api/users'],
+      payloads: ['1\' OR \'1\'=\'1', 'UNION SELECT * FROM users', 'DROP TABLE users']
     },
     ddos: {
-      requestRate: 10000,
+      requestRate: 1000,
       duration: 30,
       targetPorts: [80, 443, 8080]
     }
@@ -75,8 +75,6 @@ class SimulationEngine {
       console.error('Error starting simulation:', error);
       throw error;
     }
-  }
-    });
   }
 
   async stopSimulation(simulationId: string) {
