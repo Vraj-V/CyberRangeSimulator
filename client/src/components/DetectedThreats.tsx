@@ -1,14 +1,17 @@
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Download, RefreshCw, Ban, Eye, Bug, UserX, Zap } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Download, RefreshCw, Ban, Eye, Bug, UserX, Zap, X } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { Threat } from "@shared/schema";
 
 export default function DetectedThreats() {
+  const [selectedThreat, setSelectedThreat] = useState<Threat | null>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
   
@@ -159,14 +162,96 @@ export default function DetectedThreats() {
                           >
                             <Ban className="w-4 h-4" />
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            data-testid={`button-view-details-${threat.id}`}
-                            title="View Details"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Button>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setSelectedThreat(threat)}
+                                data-testid={`button-view-details-${threat.id}`}
+                                title="View Details"
+                              >
+                                <Eye className="w-4 h-4" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-2xl" data-testid={`threat-details-modal-${threat.id}`}>
+                              <DialogHeader>
+                                <DialogTitle className="flex items-center gap-3">
+                                  <div className="w-8 h-8 bg-destructive/20 rounded-lg flex items-center justify-center">
+                                    {(() => {
+                                      const ThreatIcon = getThreatIcon(threat.name);
+                                      return <ThreatIcon className="w-4 h-4 text-destructive" />;
+                                    })()}
+                                  </div>
+                                  Threat Details: {threat.name}
+                                </DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-6">
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <label className="text-sm font-medium text-muted-foreground">Threat ID</label>
+                                    <p className="font-mono text-sm">{threat.id}</p>
+                                  </div>
+                                  <div>
+                                    <label className="text-sm font-medium text-muted-foreground">Severity</label>
+                                    <div className="mt-1">
+                                      <Badge className={getSeverityColor(threat.severity)}>
+                                        {threat.severity}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <label className="text-sm font-medium text-muted-foreground">Source IP</label>
+                                    <p className="font-mono text-sm">{threat.sourceIP}</p>
+                                  </div>
+                                  <div>
+                                    <label className="text-sm font-medium text-muted-foreground">Target IP</label>
+                                    <p className="font-mono text-sm">{threat.targetIP || 'N/A'}</p>
+                                  </div>
+                                  <div>
+                                    <label className="text-sm font-medium text-muted-foreground">Status</label>
+                                    <div className="mt-1">
+                                      <Badge className={getStatusColor(threat.status)}>
+                                        {threat.status}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <label className="text-sm font-medium text-muted-foreground">Detected At</label>
+                                    <p className="text-sm">{formatTimestamp(threat.detectedAt.toString())}</p>
+                                  </div>
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium text-muted-foreground">Description</label>
+                                  <p className="text-sm mt-1">{threat.description}</p>
+                                </div>
+                                {threat.metadata ? (
+                                  <div>
+                                    <label className="text-sm font-medium text-muted-foreground">Additional Details</label>
+                                    <div className="mt-2 p-3 bg-muted rounded-lg">
+                                      <pre className="text-xs overflow-x-auto">
+                                        {JSON.stringify(threat.metadata as any, null, 2)}
+                                      </pre>
+                                    </div>
+                                  </div>
+                                ) : null}
+                                <div className="flex justify-end gap-3 pt-4 border-t">
+                                  <Button
+                                    variant="destructive"
+                                    onClick={() => {
+                                      blockIPMutation.mutate(threat.id);
+                                      setSelectedThreat(null);
+                                    }}
+                                    disabled={blockIPMutation.isPending}
+                                    data-testid={`button-block-ip-modal-${threat.id}`}
+                                  >
+                                    <Ban className="w-4 h-4 mr-2" />
+                                    Block IP Address
+                                  </Button>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
                         </div>
                       </TableCell>
                     </TableRow>
