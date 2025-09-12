@@ -72,10 +72,10 @@ export default function CreateSimulationDialog({ trigger, isStartFirst = false }
     const simulationData = {
       name: formData.name,
       type: formData.type,
-      targets: formData.targets,
+      targets: parseInt(formData.targets) || 1, // Convert to number
       status: "running",
       startedAt: new Date(),
-      parameters: formData.parameters ? JSON.parse(formData.parameters) : {}
+      config: formData.parameters ? JSON.parse(formData.parameters) : {} // Use 'config' instead of 'parameters'
     };
 
     createSimulationMutation.mutate(simulationData);
@@ -127,12 +127,15 @@ export default function CreateSimulationDialog({ trigger, isStartFirst = false }
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="targets">Target Systems *</Label>
+            <Label htmlFor="targets">Number of Target Systems *</Label>
             <Input
               id="targets"
+              type="number"
+              min="1"
+              max="100"
               value={formData.targets}
               onChange={(e) => setFormData(prev => ({ ...prev, targets: e.target.value }))}
-              placeholder="e.g., web-server-1, database-cluster, email-system"
+              placeholder="e.g., 5"
               required
             />
           </div>
