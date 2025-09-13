@@ -1,9 +1,9 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
-import { storage } from "./storage";
-import { threatDetectionService } from "./services/threatDetection";
-// import { simulationEngine } from "./services/simulationEngine";
+import { storage } from "./storage.js";
+import { threatDetectionService } from "./services/threatDetection.js";
+// import { simulationEngine } from "./services/simulationEngine.js";
 import { responseAutomation } from "./services/responseAutomation.js";
 import { insertThreatSchema, insertSimulationSchema, insertResponseSchema, type Simulation } from "@shared/schema";
 

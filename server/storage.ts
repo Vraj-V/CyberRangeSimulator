@@ -1,5 +1,6 @@
 import { threats, simulations, responses, systemLogs, blockedIPs, type Threat, type InsertThreat, type Simulation, type InsertSimulation, type Response, type InsertResponse, type SystemLog, type InsertSystemLog, type BlockedIP, type InsertBlockedIP } from "@shared/schema";
-import { db } from "./db";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { db } from "./db.js";
 import { eq, desc, count, and, gte, lte } from "drizzle-orm";
 
 export interface IStorage {

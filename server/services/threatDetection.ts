@@ -1,4 +1,4 @@
-import { storage } from "../storage";
+import { storage } from "../storage.js";
 import { responseAutomation } from "./responseAutomation.js";
 
 interface ThreatPattern {
