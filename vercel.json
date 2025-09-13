@@ -23,10 +23,9 @@
       "dest": "/client/dist/$1"
     }
   ],
-  "installCommand": "npm ci --legacy-peer-deps --no-optional",
+  "installCommand": "npm install --legacy-peer-deps --omit=optional",
   "buildCommand": "npm run vercel-build",
   "env": {
-    "NODE_ENV": "production",
-    "NPM_CONFIG_OPTIONAL": "false"
+    "NODE_ENV": "production"
   }
 }
