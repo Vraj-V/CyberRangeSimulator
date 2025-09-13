@@ -107,9 +107,13 @@
     "tailwindcss": "^3.4.17",
     "tsx": "^4.19.1",
     "typescript": "5.6.3",
-    "vite": "^7.1.5"
+    "vite": "^5.4.8"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.8"
+  },
+  "resolutions": {
+    "@rollup/rollup-linux-x64-gnu": "*",
+    "rollup": "^4.21.2"
   }
 }
