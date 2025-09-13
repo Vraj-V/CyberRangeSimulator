@@ -5,7 +5,7 @@ import postgres from 'postgres'
 const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
-  console.warn('DATABASE_URL environment variable not found. Running in demo mode without database.');
+  console.warn('DATABASE_URL environment variable not found. Running in demo mode without database,please.');
 }
 
 // create SQL client with proper connection settings (only if URL exists)
