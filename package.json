@@ -106,13 +106,18 @@
     "tailwindcss": "^3.4.17",
     "tsx": "^4.19.1",
     "typescript": "5.6.3",
-    "vite": "^5.4.8"
+    "vite": "^4.5.3"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.8"
   },
+  "overrides": {
+    "esbuild": "^0.18.0"
+  },
   "resolutions": {
     "@rollup/rollup-linux-x64-gnu": "*",
-    "rollup": "^4.21.2"
+    "rollup": "^3.29.0",
+    "esbuild": "^0.18.0",
+    "**/esbuild": "^0.18.0"
   }
 }
