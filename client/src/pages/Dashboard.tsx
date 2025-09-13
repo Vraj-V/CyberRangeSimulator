@@ -7,45 +7,80 @@ import AutomatedResponses from "@/components/AutomatedResponses";
 import RecentActivity from "@/components/RecentActivity";
 import SystemStatus from "@/components/SystemStatus";
 import { useWebSocket } from "@/hooks/useWebSocket";
+import { Menu, X } from "lucide-react";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   // Connect to WebSocket for real-time updates
   useWebSocket();
 
   return (
     <div className="flex h-screen bg-background" data-testid="dashboard-container">
-      <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+      {/* Mobile overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" 
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <div className={`${
+        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+      } fixed lg:relative lg:translate-x-0 z-50 lg:z-auto transition-transform duration-300 ease-in-out`}>
+        <Sidebar 
+          activeTab={activeTab} 
+          onTabChange={(tab) => {
+            setActiveTab(tab);
+            setIsMobileMenuOpen(false);
+          }} 
+        />
+      </div>
       
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="bg-card border-b border-border px-8 py-6" data-testid="dashboard-header">
-          <div>
-            <h2 className="text-2xl font-bold text-card-foreground mb-2">
-              {activeTab === 'dashboard' && 'Dashboard'}
-              {activeTab === 'simulations' && 'Simulations'}
-              {activeTab === 'threats' && 'Threats'}
-              {activeTab === 'responses' && 'Automated Responses'}
-              {activeTab === 'reports' && 'Reports'}
-              {activeTab === 'settings' && 'Settings'}
-              {activeTab === 'help' && 'Help'}
-            </h2>
-            <p className="text-muted-foreground">
-              {activeTab === 'dashboard' && 'Real-time overview of active simulations, detected threats, and automated responses.'}
-              {activeTab === 'simulations' && 'Manage and monitor security simulations and attack scenarios.'}
-              {activeTab === 'threats' && 'View and manage detected security threats and incidents.'}
-              {activeTab === 'responses' && 'Review automated security responses and actions taken.'}
-              {activeTab === 'reports' && 'Access security reports and analytics.'}
-              {activeTab === 'settings' && 'Configure system settings and preferences.'}
-              {activeTab === 'help' && 'Get help and documentation for the CyberGuard AI system.'}
-            </p>
+        <header className="bg-card border-b border-border px-4 sm:px-6 lg:px-8 py-4 lg:py-6" data-testid="dashboard-header">
+          <div className="flex items-center gap-4">
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="lg:hidden p-2 rounded-md hover:bg-muted"
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-5 h-5 text-foreground" />
+              ) : (
+                <Menu className="w-5 h-5 text-foreground" />
+              )}
+            </button>
+            
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold text-card-foreground mb-2">
+                {activeTab === 'dashboard' && 'Dashboard'}
+                {activeTab === 'simulations' && 'Simulations'}
+                {activeTab === 'threats' && 'Threats'}
+                {activeTab === 'responses' && 'Automated Responses'}
+                {activeTab === 'reports' && 'Reports'}
+                {activeTab === 'settings' && 'Settings'}
+                {activeTab === 'help' && 'Help'}
+              </h2>
+              <p className="text-sm sm:text-base text-muted-foreground">
+                {activeTab === 'dashboard' && 'Real-time overview of active simulations, detected threats, and automated responses.'}
+                {activeTab === 'simulations' && 'Manage and monitor security simulations and attack scenarios.'}
+                {activeTab === 'threats' && 'View and manage detected security threats and incidents.'}
+                {activeTab === 'responses' && 'Review automated security responses and actions taken.'}
+                {activeTab === 'reports' && 'Access security reports and analytics.'}
+                {activeTab === 'settings' && 'Configure system settings and preferences.'}
+                {activeTab === 'help' && 'Get help and documentation for the CyberGuard AI system.'}
+              </p>
+            </div>
           </div>
         </header>
         
         {/* Main Content */}
         <main className="flex-1 overflow-auto scrollbar-thin bg-background" data-testid="dashboard-main">
-          <div className="p-8 space-y-8">
+          <div className="p-4 sm:p-6 lg:p-8 space-y-6 lg:space-y-8">
             {/* Dashboard View - All Components */}
             {activeTab === 'dashboard' && (
               <>

@@ -93,7 +93,7 @@ export default function CreateSimulationDialog({ trigger, isStartFirst = false }
       <DialogTrigger asChild>
         {trigger || defaultTrigger}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto mx-4">
         <DialogHeader>
           <DialogTitle>Create New Simulation</DialogTitle>
         </DialogHeader>

@@ -1,5 +1,5 @@
 import { storage } from "../storage.js";
-import { type Threat } from "@shared/schema";
+import { type Threat } from "../../shared/schema.js";
 
 class ResponseAutomation {
   private broadcast: ((data: any) => void) | null = null;

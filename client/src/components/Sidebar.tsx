@@ -26,7 +26,7 @@ export default function Sidebar({ activeTab, onTabChange }: SidebarProps) {
   ];
 
   return (
-    <div className="w-64 bg-card border-r border-border flex flex-col" data-testid="sidebar">
+    <div className="w-64 h-screen bg-card border-r border-border flex flex-col" data-testid="sidebar">
       {/* Logo Section */}
       <div className="p-6 border-b border-border" data-testid="sidebar-logo">
         <div className="flex items-center gap-3">

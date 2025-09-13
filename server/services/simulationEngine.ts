@@ -1,5 +1,5 @@
 import { storage } from "../storage.js";
-import { type Simulation } from "@shared/schema";
+import { type Simulation } from "../../shared/schema.js";
 
 interface SimulationConfig {
   phishing: {

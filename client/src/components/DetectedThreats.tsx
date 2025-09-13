@@ -77,29 +77,34 @@ export default function DetectedThreats() {
 
   return (
     <Card className="border-border" data-testid="detected-threats">
-      <CardHeader className="p-6 border-b border-border">
-        <div className="flex items-center justify-between">
+      <CardHeader className="p-4 sm:p-6 border-b border-border">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <h3 className="text-lg font-semibold text-card-foreground">Detected Threats</h3>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" data-testid="button-export-threats">
-              <Download className="w-4 h-4 mr-2" />
-              Export
-            </Button>
+          <div className="flex flex-wrap gap-2">
             <Button 
               variant="outline" 
               size="sm" 
               onClick={() => refetch()}
-              data-testid="button-refresh-threats"
+              disabled={isLoading}
+              className="flex-1 sm:flex-none"
             >
-              <RefreshCw className="w-4 h-4 mr-2" />
+              <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
               Refresh
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="flex-1 sm:flex-none"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Export
             </Button>
           </div>
         </div>
       </CardHeader>
       <CardContent className="p-0">
         {isLoading ? (
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             <div className="animate-pulse space-y-4">
               {[...Array(5)].map((_, i) => (
                 <div key={i} className="h-16 bg-muted rounded"></div>
@@ -108,7 +113,8 @@ export default function DetectedThreats() {
           </div>
         ) : threats && threats.length > 0 ? (
           <>
-            <div className="overflow-x-auto">
+            {/* Desktop Table View */}
+            <div className="hidden lg:block overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow className="border-b border-border">
@@ -235,7 +241,10 @@ export default function DetectedThreats() {
                                     <label className="text-sm font-medium text-muted-foreground">Additional Details</label>
                                     <div className="mt-2 p-3 bg-muted rounded-lg">
                                       <pre className="text-xs overflow-x-auto">
-                                        {JSON.stringify(threat.metadata as any, null, 2)}
+                                        {typeof threat.metadata === 'object' 
+                                          ? JSON.stringify(threat.metadata, null, 2)
+                                          : String(threat.metadata)
+                                        }
                                       </pre>
                                     </div>
                                   </div>
@@ -265,6 +274,140 @@ export default function DetectedThreats() {
               </TableBody>
             </Table>
             </div>
+            
+            {/* Mobile Card View */}
+            <div className="lg:hidden space-y-4 p-4">
+              {displayedThreats?.map((threat) => {
+                const ThreatIcon = getThreatIcon(threat.name);
+                
+                return (
+                  <div key={threat.id} className="border border-border rounded-lg p-4 bg-card">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-destructive/20 rounded-lg flex items-center justify-center">
+                          <ThreatIcon className="w-4 h-4 text-destructive" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-card-foreground">{threat.name}</p>
+                          <p className="text-sm text-muted-foreground">{threat.sourceIP}</p>
+                        </div>
+                      </div>
+                      <Badge className={getSeverityColor(threat.severity)}>
+                        {threat.severity}
+                      </Badge>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-2 text-sm mb-3">
+                      <div>
+                        <span className="text-muted-foreground">Status:</span>
+                        <Badge className={`ml-2 ${getStatusColor(threat.status)}`}>
+                          {threat.status}
+                        </Badge>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Time:</span>
+                        <span className="ml-2">{formatTimestamp(threat.detectedAt.toString())}</span>
+                      </div>
+                    </div>
+                    
+                    <p className="text-sm text-muted-foreground mb-3">{threat.description}</p>
+                    
+                    <div className="flex gap-2">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="sm" className="flex-1">
+                            <Eye className="w-4 h-4 mr-2" />
+                            Details
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle>{threat.name}</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              <div>
+                                <label className="text-sm font-medium text-muted-foreground">Threat ID</label>
+                                <p className="font-mono text-sm">{threat.id}</p>
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium text-muted-foreground">Severity</label>
+                                <div className="mt-1">
+                                  <Badge className={getSeverityColor(threat.severity)}>
+                                    {threat.severity}
+                                  </Badge>
+                                </div>
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium text-muted-foreground">Source IP</label>
+                                <p className="font-mono text-sm">{threat.sourceIP}</p>
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium text-muted-foreground">Target IP</label>
+                                <p className="font-mono text-sm">{threat.targetIP || 'N/A'}</p>
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium text-muted-foreground">Status</label>
+                                <div className="mt-1">
+                                  <Badge className={getStatusColor(threat.status)}>
+                                    {threat.status}
+                                  </Badge>
+                                </div>
+                              </div>
+                              <div>
+                                <label className="text-sm font-medium text-muted-foreground">Detected At</label>
+                                <p className="text-sm">{formatTimestamp(threat.detectedAt.toString())}</p>
+                              </div>
+                            </div>
+                            <div>
+                              <label className="text-sm font-medium text-muted-foreground">Description</label>
+                              <p className="text-sm mt-1">{threat.description}</p>
+                            </div>
+                            {threat.metadata ? (
+                              <div>
+                                <label className="text-sm font-medium text-muted-foreground">Additional Details</label>
+                                <div className="mt-2 p-3 bg-muted rounded-lg">
+                                  <pre className="text-xs overflow-x-auto">
+                                    {typeof threat.metadata === 'object' 
+                                      ? JSON.stringify(threat.metadata, null, 2)
+                                      : String(threat.metadata)
+                                    }
+                                  </pre>
+                                </div>
+                              </div>
+                            ) : null}
+                            <div className="flex justify-end gap-3 pt-4 border-t">
+                              <Button
+                                variant="destructive"
+                                onClick={() => {
+                                  blockIPMutation.mutate(threat.id);
+                                }}
+                                disabled={blockIPMutation.isPending}
+                              >
+                                <Ban className="w-4 h-4 mr-2" />
+                                Block IP Address
+                              </Button>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                      
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => blockIPMutation.mutate(threat.id)}
+                        disabled={blockIPMutation.isPending}
+                        className="flex-1"
+                      >
+                        <Ban className="w-4 h-4 mr-2" />
+                        Block IP
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            
             {/* Show More/Show Less Button */}
             {threats && threats.length > 10 && (
               <div className="p-4 border-t border-border bg-muted/20">

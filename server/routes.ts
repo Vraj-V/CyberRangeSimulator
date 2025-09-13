@@ -5,7 +5,7 @@ import { storage } from "./storage.js";
 import { threatDetectionService } from "./services/threatDetection.js";
 // import { simulationEngine } from "./services/simulationEngine.js";
 import { responseAutomation } from "./services/responseAutomation.js";
-import { insertThreatSchema, insertSimulationSchema, insertResponseSchema, type Simulation } from "@shared/schema";
+import { insertThreatSchema, insertSimulationSchema, insertResponseSchema, type Simulation } from "../shared/schema.js";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);

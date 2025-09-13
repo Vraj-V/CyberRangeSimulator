@@ -40,13 +40,13 @@ export default function ActiveSimulations() {
 
   return (
     <Card className="border-border" data-testid="active-simulations">
-      <CardHeader className="p-6 border-b border-border">
-        <div className="flex items-center justify-between">
+      <CardHeader className="p-4 sm:p-6 border-b border-border">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <h3 className="text-lg font-semibold text-card-foreground">Active Simulations</h3>
           <CreateSimulationDialog />
         </div>
       </CardHeader>
-      <CardContent className="p-6">
+      <CardContent className="p-4 sm:p-6">
         {isLoading ? (
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
@@ -64,21 +64,21 @@ export default function ActiveSimulations() {
               return (
                 <div 
                   key={simulation.id} 
-                  className="flex items-center justify-between p-4 bg-muted rounded-lg border border-border"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-muted rounded-lg border border-border gap-4"
                   data-testid={`simulation-${simulation.id}`}
                 >
                   <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
                       <h4 className="font-medium text-card-foreground">{simulation.name}</h4>
-                      <span className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs ${getStatusColor(simulation.status)}`}>
+                      <span className={`self-start sm:self-auto flex items-center gap-1 px-2 py-1 rounded-full text-xs ${getStatusColor(simulation.status)}`}>
                         <div className="w-2 h-2 bg-current rounded-full animate-pulse"></div>
                         {simulation.status === 'running' ? 'Running' : simulation.status}
                       </span>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
                       <span>Duration: {duration}</span>
                       <span>Target: {simulation.targets}</span>
-                      <span>
+                      <span className="hidden sm:inline">
                         {simulation.type === 'phishing' ? `Success Rate: ${simulation.successRate || '0%'}` :
                          simulation.type === 'sqli' ? `Endpoints: ${simulation.targets}` :
                          simulation.type === 'ddos' ? `Rate: 10k req/sec` :
@@ -86,17 +86,20 @@ export default function ActiveSimulations() {
                       </span>
                     </div>
                   </div>
-                  <div className="w-20 h-20 bg-accent rounded-lg flex items-center justify-center ml-4">
-                    <Icon className="w-8 h-8 text-accent-foreground opacity-50" />
-                  </div>
-                  <div className="ml-4">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      data-testid={`button-view-details-${simulation.id}`}
-                    >
-                      View Details
-                    </Button>
+                  <div className="flex items-center gap-4 sm:gap-0">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-accent rounded-lg flex items-center justify-center sm:ml-4">
+                      <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-accent-foreground opacity-50" />
+                    </div>
+                    <div className="sm:ml-4">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        className="w-full sm:w-auto"
+                        data-testid={`button-view-details-${simulation.id}`}
+                      >
+                        View Details
+                      </Button>
+                    </div>
                   </div>
                 </div>
               );
