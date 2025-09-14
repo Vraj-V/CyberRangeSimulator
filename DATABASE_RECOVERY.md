@@ -13,7 +13,7 @@
    ```bash
    # Edit .env file
    DATABASE_URL="your_new_database_url"
-   ```
+   ```use of this is when user commit. 
 
 3. **Recreate Tables**
    ```bash
