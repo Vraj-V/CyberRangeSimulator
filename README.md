@@ -23,7 +23,7 @@ npm start
 2. Login: `vercel login`
 3. Deploy: `vercel --prod`
 4. Set environment variable: `DATABASE_URL`
-
+ Fixing the problem for simulation 
 ### Environment Variables
 ```
 DATABASE_URL=your_postgresql_connection_string
